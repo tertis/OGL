@@ -1,4 +1,4 @@
 # OGL
 Open Game Library
 
-Game Utility Library based C# and mono
+Game Utility Library based .net and mono
