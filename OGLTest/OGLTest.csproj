@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E5FC59B6-4456-40FE-9861-28D0F045CF81}</ProjectGuid>
+    <ProjectGuid>{21E7E666-8CBD-45D2-9294-E1B466C384BD}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>OGLTestXamarin</RootNamespace>
-    <AssemblyName>OGLTestXamarin</AssemblyName>
+    <RootNamespace>OGLTest</RootNamespace>
+    <AssemblyName>OGLTest</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -33,12 +33,12 @@
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Network.cs" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Network.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OGL\OGL.csproj">

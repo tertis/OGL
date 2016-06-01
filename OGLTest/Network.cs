@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using System.Diagnostics;
 
-namespace OGLTestXamarin
+namespace OGLTest
 {		
 	[TestFixture]
 	public class Network
