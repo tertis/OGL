@@ -1,10 +1,12 @@
 ﻿using System.Net.Sockets;
 using System.Text;
+using System;
 
 namespace OGL.Network.TCP
 {
 	public class StateObject
 	{
+		public Action<object> callback = null;
 		// Client  socket.
 		public Socket workSocket = null;
 		// Size of receive buffer.

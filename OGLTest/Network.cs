@@ -1,6 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 using System.Diagnostics;
+using System.Threading;
 
 namespace OGLTest
 {		
@@ -10,6 +11,9 @@ namespace OGLTest
 		OGL.Network.TCP.Server server;
 		OGL.Network.TCP.Client client;
 
+		ManualResetEvent connect = new ManualResetEvent(false);
+		ManualResetEvent receive = new ManualResetEvent(false);
+
 		[TestFixtureSetUp]
 		public void Setup()
 		{
@@ -18,10 +22,29 @@ namespace OGLTest
 		}
 			
 		[Test]
-		public void StartClient()
+		public void AClientStart()
 		{
 			client = new OGL.Network.TCP.Client();
-			client.Start("127.0.0.1");
+			client.StartConnect("127.0.0.1", 11000, Connected);
+			connect.WaitOne();
+		}
+
+		[Test]
+		public void BClientSendRecv()
+		{
+			client.RegisterRecvCallback(1, Received);
+			client.Send(1, "HI<EOF>");
+			receive.WaitOne();
+		}
+
+		private void Connected()
+		{
+			connect.Set();
+		}
+
+		private void Received(object obj)
+		{
+			receive.Set();
 		}
 
 		[TestFixtureTearDown]
