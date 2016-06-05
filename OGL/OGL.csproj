@@ -38,8 +38,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Network\TCP\Base.cs" />
     <Compile Include="Network\TCP\Client.cs" />
-    <Compile Include="Network\TCP\AsynchronousSocketListener.cs" />
     <Compile Include="Network\TCP\Server.cs" />
     <Compile Include="Network\TCP\StateObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

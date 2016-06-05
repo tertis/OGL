@@ -6,7 +6,6 @@ namespace OGL.Network.TCP
 {
 	public class StateObject
 	{
-		public Action<object> callback = null;
 		// Client  socket.
 		public Socket workSocket = null;
 		// Size of receive buffer.
@@ -15,5 +14,10 @@ namespace OGL.Network.TCP
 		public byte[] buffer = new byte[BufferSize];
 		// Received data string.
 		public StringBuilder sb = new StringBuilder();
+	}
+
+	public class ServerStateObject : StateObject
+	{
+		public uint clientID = uint.MinValue;
 	}
 }

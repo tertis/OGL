@@ -18,22 +18,21 @@ namespace OGLTest
 		public void Setup()
 		{
 			server = new OGL.Network.TCP.Server();
-			server.Start();
+			server.StartListen("127.0.0.1", 11000, o => { }, ServerReceived);
 		}
 			
 		[Test]
 		public void AClientStart()
 		{
 			client = new OGL.Network.TCP.Client();
-			client.StartConnect("127.0.0.1", 11000, Connected);
+			client.StartConnect("127.0.0.1", 11000, Connected, Received);
 			connect.WaitOne();
 		}
 
 		[Test]
 		public void BClientSendRecv()
 		{
-			client.RegisterRecvCallback(1, Received);
-			client.Send(1, "HI<EOF>");
+			client.Send(1, BitConverter.GetBytes(123));
 			receive.WaitOne();
 		}
 
@@ -45,6 +44,11 @@ namespace OGLTest
 		private void Received(object obj)
 		{
 			receive.Set();
+		}
+
+		private void ServerReceived(uint id, byte[] data)
+		{
+			server.Send(id, data);
 		}
 
 		[TestFixtureTearDown]
