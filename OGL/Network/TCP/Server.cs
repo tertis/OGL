@@ -71,6 +71,11 @@ namespace OGL.Network.TCP
 			callbackConn(state.clientID);
 			connections.Add(handler);
 			connectionsMap.Add(state.clientID, handler);
+
+			// 다시 연결 대기
+			listener.BeginAccept(
+							new AsyncCallback(AcceptCallback),
+							listener);
 		}
 
 		public bool Send(uint clientID, byte[] data)
