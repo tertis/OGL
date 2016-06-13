@@ -36,6 +36,26 @@ namespace OGLTest
 			receive.WaitOne();
 		}
 
+		[Test]
+		public void PacketMake()
+		{
+			var packet = new OGL.Network.Packet(0, 100);
+			Assert.IsTrue(packet.GetBufferSize() == 100);
+		}
+
+		[Test]
+		public void PacketEncode()
+		{
+			var packet = new OGL.Network.Packet(0, 100);
+			var length = BitConverter.GetBytes(100).Length;
+			packet.Encode(100);	// +4
+			packet.Encode(200); // +4
+			packet.Encode("ㅁ"); // +3
+			packet.Encode("11.aㅁ김"); // +10
+
+			Assert.IsTrue(packet.GetLength() == 21);
+		}
+
 		private void Connected()
 		{
 			connect.Set();
