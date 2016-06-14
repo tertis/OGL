@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Net;
 using System.Net.Sockets;
 
@@ -10,9 +8,10 @@ namespace OGL.Network.TCP
 	{
 		private Socket client = null;
 		private Action callbackConnect = null;
+		private Action callbackDisconnect = null;
 		protected Action<byte[]> callbackRecv = null;
 
-		public bool StartConnect(string ipAddr, int port, Action connCallback, Action<byte[]> recvCallback)
+		public bool StartConnect(string ipAddr, int port, Action connCallback, Action<byte[]> recvCallback, Action disconnCallback)
 		{
 			try
 			{
@@ -29,6 +28,7 @@ namespace OGL.Network.TCP
 
 				callbackConnect = connCallback;
 				callbackRecv = recvCallback;
+				callbackDisconnect = disconnCallback;
 			}
 			catch (Exception e)
 			{
@@ -96,15 +96,21 @@ namespace OGL.Network.TCP
 
 		protected void ReceiveCallback(IAsyncResult ar)
 		{
+			StateObject state = (StateObject)ar.AsyncState;
+			Socket socket = state.workSocket;
 			try
 			{
-				// Retrieve the state object and the client socket 
-				// from the asynchronous state object.
-				StateObject state = (StateObject)ar.AsyncState;
-				Socket socket = state.workSocket;
-
 				// 소켓에서 데이터를 읽어 온다.
 				int bytesRead = socket.EndReceive(ar);
+
+				// 원격지에서 정상적으로 소켓을 종료했다.
+				if (bytesRead == 0)
+				{
+					callbackDisconnect();
+					socket.Shutdown(SocketShutdown.Both);
+					socket.Close();
+					return;
+				}
 
 				if (bytesRead > 0)
 				{
@@ -127,7 +133,15 @@ namespace OGL.Network.TCP
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e.ToString());
+				// 소켓이 강제로 끊김
+				if (!socket.Connected)
+				{
+					callbackDisconnect();
+				}
+				else
+				{
+					Console.WriteLine(e.ToString());
+				}
 			}
 		}
 	}

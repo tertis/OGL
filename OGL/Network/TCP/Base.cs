@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Net.Sockets;
 
 namespace OGL.Network.TCP
@@ -48,5 +46,12 @@ namespace OGL.Network.TCP
 
 			return true;
 		}
+
+		protected void DisconnectCallback(IAsyncResult ar)
+		{
+			Socket client = (Socket)ar.AsyncState;
+			client.EndDisconnect(ar);
+		}
+
 	}
 }

@@ -13,19 +13,20 @@ namespace OGLTest
 
 		ManualResetEvent connect = new ManualResetEvent(false);
 		ManualResetEvent receive = new ManualResetEvent(false);
+		ManualResetEvent disconnected_client = new ManualResetEvent(false);
 
 		[TestFixtureSetUp]
 		public void Setup()
 		{
 			server = new OGL.Network.TCP.Server();
-			server.StartListen("127.0.0.1", 11000, o => { }, ServerReceived);
+			server.StartListen("127.0.0.1", 11000, o => { }, ServerReceived, Disconnected_Server);
 		}
 			
 		[Test]
 		public void AClientStart()
 		{
 			client = new OGL.Network.TCP.Client();
-			client.StartConnect("127.0.0.1", 11000, Connected, Received);
+			client.StartConnect("127.0.0.1", 11000, Connected, Received, Disconnected_Client);
 			connect.WaitOne();
 		}
 
@@ -56,6 +57,13 @@ namespace OGLTest
 			Assert.IsTrue(packet.GetLength() == 21);
 		}
 
+		[Test]
+		public void ZServerStop()
+		{
+			server.Stop();
+			disconnected_client.WaitOne();
+		}
+
 		private void Connected()
 		{
 			connect.Set();
@@ -71,11 +79,20 @@ namespace OGLTest
 			server.Send(id, data);
 		}
 
+		private void Disconnected_Server(uint clientID)
+		{
+
+		}
+
+		private void Disconnected_Client()
+		{
+			disconnected_client.Set();
+		}
+
 		[TestFixtureTearDown]
 		public void CleanUp()
 		{
 			server.Stop();
-			Trace.Write("Test End");
 		}
 	}
 }
