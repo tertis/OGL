@@ -10,7 +10,6 @@ namespace OGL.Network.TCP
 		private Action<uint> callbackConnect = null;
 		private Action<uint> callbackDisconnect = null;
 		protected Action<uint, byte[]> callbackRecv = null;
-		private readonly List<Socket> connections = new List<Socket>();
 		private readonly Dictionary<uint, Socket> connectionsMap = new Dictionary<uint, Socket>();
 		private uint curConnIdx = uint.MinValue;
 
@@ -75,7 +74,6 @@ namespace OGL.Network.TCP
 				new AsyncCallback(ReceiveCallback), state);
 
 			callbackConnect(state.clientID);
-			connections.Add(handler);
 			connectionsMap.Add(state.clientID, handler);
 
 			// 다시 연결 대기
@@ -119,6 +117,10 @@ namespace OGL.Network.TCP
 				if (bytesRead == 0)
 				{
 					callbackDisconnect(state.clientID);
+					socket.Shutdown(SocketShutdown.Both);
+					socket.Close();
+					connectionsMap.Remove(state.clientID);
+					return;
 				}
 
 				if (bytesRead > 0)
@@ -147,6 +149,8 @@ namespace OGL.Network.TCP
 				if (!socket.Connected)
 				{
 					callbackDisconnect(state.clientID);
+					socket.Close();
+					connectionsMap.Remove(state.clientID);
 				}
 				else
 				{
@@ -160,10 +164,12 @@ namespace OGL.Network.TCP
 		/// </summary>
 		public void Stop()
 		{
-			foreach (var connection in connections)
+			foreach (var connection in connectionsMap.Values)
 			{
 				Disconnect(connection);
 			}
+
+			connectionsMap.Clear();
 		}
 	}
 }

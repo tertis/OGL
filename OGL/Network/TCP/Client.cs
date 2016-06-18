@@ -137,6 +137,8 @@ namespace OGL.Network.TCP
 				if (!socket.Connected)
 				{
 					callbackDisconnect();
+					socket.Shutdown(SocketShutdown.Both);
+					socket.Close();
 				}
 				else
 				{
