@@ -164,7 +164,8 @@ namespace OGL.Network.TCP
 		/// </summary>
 		public void Stop()
 		{
-			foreach (var connection in connectionsMap.Values)
+			List<Socket> sockets = new List<Socket>(connectionsMap.Values);
+			foreach (var connection in sockets)
 			{
 				Disconnect(connection);
 			}

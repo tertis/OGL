@@ -14,6 +14,7 @@ namespace OGLTest
 		ManualResetEvent connect = new ManualResetEvent(false);
 		ManualResetEvent receive = new ManualResetEvent(false);
 		ManualResetEvent disconnected_client = new ManualResetEvent(false);
+		ManualResetEvent connectFail = new ManualResetEvent(false);
 
 		[TestFixtureSetUp]
 		public void Setup()
@@ -26,15 +27,15 @@ namespace OGLTest
 		public void AClientStart()
 		{
 			client = new OGL.Network.TCP.Client();
-			client.StartConnect("127.0.0.1", 11000, Connected, Received, Disconnected_Client);
-			connect.WaitOne();
+			client.StartConnect("127.0.0.1", 11000, Connected, Received, Disconnected_Client, null);
+			connect.WaitOne(100, true);
 		}
 
 		[Test]
 		public void BClientSendRecv()
 		{
 			client.Send(1, BitConverter.GetBytes(123));
-			receive.WaitOne();
+			receive.WaitOne(100, true);
 		}
 
 		[Test]
@@ -61,7 +62,20 @@ namespace OGLTest
 		public void ZServerStop()
 		{
 			server.Stop();
-			disconnected_client.WaitOne();
+			disconnected_client.WaitOne(100, true);
+		}
+
+		[Test]
+		public void ConnectedFail()
+		{
+			var clientfail = new OGL.Network.TCP.Client();
+			clientfail.StartConnect("127.0.0.1", 12345, Connected, Received, Disconnected_Client, ConnectFail);
+			connectFail.WaitOne(3000, false);
+		}
+
+		private void ConnectFail()
+		{
+			connectFail.Set();
 		}
 
 		private void Connected()

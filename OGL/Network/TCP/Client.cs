@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace OGL.Network.TCP
 {
@@ -9,9 +10,14 @@ namespace OGL.Network.TCP
 		private Socket client = null;
 		private Action callbackConnect = null;
 		private Action callbackDisconnect = null;
+		private Action callbackConnectFail = null;
 		protected Action<byte[]> callbackRecv = null;
 
-		public bool StartConnect(string ipAddr, int port, Action connCallback, Action<byte[]> recvCallback, Action disconnCallback)
+		public bool StartConnect(string ipAddr, int port,
+			Action connCallback,
+			Action<byte[]> recvCallback,
+			Action disconnCallback,
+			Action connFailCallback)
 		{
 			try
 			{
@@ -29,6 +35,7 @@ namespace OGL.Network.TCP
 				callbackConnect = connCallback;
 				callbackRecv = recvCallback;
 				callbackDisconnect = disconnCallback;
+				callbackConnectFail = connFailCallback;
 			}
 			catch (Exception e)
 			{
@@ -72,6 +79,7 @@ namespace OGL.Network.TCP
 			}
 			catch (Exception e)
 			{
+				callbackConnectFail();
 				Console.WriteLine(e.ToString());
 			}
 		}

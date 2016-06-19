@@ -51,5 +51,10 @@ namespace OGL.Network
 		{
 			return offset;
 		}
+
+		public byte[] GetBuffer()
+		{
+			return buffer;
+		}
 	}
 }
